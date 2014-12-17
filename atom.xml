@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title><![CDATA[Junior's Blog]]></title>
+  <subtitle><![CDATA[哪里跑，biubiubiu]]></subtitle>
+  <link href="/atom.xml" rel="self"/>
+  <link href="http://zhuping.github.io/"/>
+  <updated>2014-12-17T16:12:04.070Z</updated>
+  <id>http://zhuping.github.io/</id>
+  
+  <author>
+    <name><![CDATA[Junior Zhu]]></name>
+    
+  </author>
+  
+  <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[thunkify 和 thunkify-wrap 的源码学习]]></title>
+    <link href="http://zhuping.github.io/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/"/>
+    <id>http://zhuping.github.io/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/</id>
+    <published>2014-12-17T03:42:08.000Z</published>
+    <updated>2014-12-17T16:11:30.000Z</updated>
+    <content type="html"><![CDATA[<p>最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 <a href="https://github.com/tj/node-thunkify" target="_blank" rel="external">thunkify</a> 和 <a href="https://github.com/node-modules/thunkify-wrap" target="_blank" rel="external">thunkify-wrap</a> 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。<br>在介绍前，我们先来看段代码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// delay为一个延迟的异步函数，cb为回调函数</span></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">delay</span><span class="params">(time, cb)</span> </span>{</div><div class="line">    setTimeout(<span class="function"><span class="keyword">function</span><span class="params">(cb)</span> </span>{</div><div class="line">        cb && cb();</div><div class="line">    }, time);</div><div class="line">}</div><div class="line"></div><div class="line">delay(<span class="number">300</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'finish.'</span>);</div><div class="line">});</div></pre></td></tr></table></figure>
+
+<p>在我们平时码代码的时候，这种情况也是司空见惯了，异步操作的回调函数以参数的形式进行传递。我这里只写了一个异步操作，代码看上去也还算整洁，但如果有多个需要按顺序执行的异步操作呢？</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">delay(<span class="number">300</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    delay(<span class="number">1000</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">        delay(<span class="number">1500</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">            ...</div><div class="line">        });</div><div class="line">    });</div><div class="line">});</div></pre></td></tr></table></figure>
+
+<p>这样就成了一个回调金字塔。代码不仅冗长，也不易阅读维护，所以我们需要把delay函数改造下。</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 <a href="https://github.com/tj/node-thunkify" target="_blank" rel="external">]]>
+    </summary>
+    
+  </entry>
+  
+</feed>
