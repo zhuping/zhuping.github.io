@@ -5,24 +5,15 @@
   
   <title>thunkify 和 thunkify-wrap 的源码学习 | Junior&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 thunkify 和 thunkify-wrap 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。
-thunkify介绍
-在介绍前我们先来看个栗子：
-123456">
+  <meta name="description" content="最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 thunkify 和 thunkify-wrap 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="thunkify 和 thunkify-wrap 的源码学习">
 <meta property="og:url" content="http://zhuping.github.io/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/">
 <meta property="og:site_name" content="Junior's Blog">
-<meta property="og:description" content="最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 thunkify 和 thunkify-wrap 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。
-thunkify介绍
-在介绍前我们先来看个栗子：
-123456">
+<meta property="og:description" content="最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 thunkify 和 thunkify-wrap 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="thunkify 和 thunkify-wrap 的源码学习">
-<meta name="twitter:description" content="最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 thunkify 和 thunkify-wrap 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。
-thunkify介绍
-在介绍前我们先来看个栗子：
-123456">
+<meta name="twitter:description" content="最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 thunkify 和 thunkify-wrap 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。">
 
   
     <link rel="alternative" href="/atom.xml" title="Junior&#39;s Blog" type="application/atom+xml">
@@ -231,6 +222,8 @@ ga('send', 'pageview');
     <div class="article-entry" itemprop="articleBody">
       
         <p>最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 <a href="https://github.com/tj/node-thunkify" target="_blank" rel="external">thunkify</a> 和 <a href="https://github.com/node-modules/thunkify-wrap" target="_blank" rel="external">thunkify-wrap</a> 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。</p>
+<a id="more"></a>
+
 <h2 id="thunkify介绍">thunkify介绍</h2>
 <p>在介绍前我们先来看个栗子：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">read</span><span class="params">(file, cb)</span> </span>{</div><div class="line">    fs.readFile(file, cb);</div><div class="line">}</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">cb</span><span class="params">(err, str)</span> </span>{</div><div class="line">    <span class="built_in">console</span>.log(str);</div><div class="line">}</div><div class="line">read(<span class="string">'package.json'</span>, cb);</div></pre></td></tr></table></figure>

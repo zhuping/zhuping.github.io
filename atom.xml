@@ -4,7 +4,7 @@
   <subtitle><![CDATA[哪里跑，biubiubiu]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://zhuping.github.io/"/>
-  <updated>2014-12-18T14:42:54.240Z</updated>
+  <updated>2014-12-19T06:18:46.596Z</updated>
   <id>http://zhuping.github.io/</id>
   
   <author>
@@ -19,8 +19,10 @@
     <link href="http://zhuping.github.io/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/"/>
     <id>http://zhuping.github.io/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/</id>
     <published>2014-12-17T03:42:08.000Z</published>
-    <updated>2014-12-18T14:42:27.000Z</updated>
+    <updated>2014-12-19T06:18:25.000Z</updated>
     <content type="html"><![CDATA[<p>最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 <a href="https://github.com/tj/node-thunkify" target="_blank" rel="external">thunkify</a> 和 <a href="https://github.com/node-modules/thunkify-wrap" target="_blank" rel="external">thunkify-wrap</a> 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。</p>
+<a id="more"></a>
+
 <h2 id="thunkify介绍">thunkify介绍</h2>
 <p>在介绍前我们先来看个栗子：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">read</span><span class="params">(file, cb)</span> </span>{</div><div class="line">    fs.readFile(file, cb);</div><div class="line">}</div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">cb</span><span class="params">(err, str)</span> </span>{</div><div class="line">    <span class="built_in">console</span>.log(str);</div><div class="line">}</div><div class="line">read(<span class="string">'package.json'</span>, cb);</div></pre></td></tr></table></figure>
@@ -41,7 +43,9 @@
 <p>thunkify-wrap框架是对thunkify的一个扩展。<br>continue…</p>
 ]]></content>
     <summary type="html">
-    <![CDATA[<p>最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 <a href="https://github.com/tj/node-thunkify" target="_blank" rel="external">]]>
+    <![CDATA[<p>最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 <a href="https://github.com/tj/node-thunkify" target="_blank" rel="external">thunkify</a> 和 <a href="https://github.com/node-modules/thunkify-wrap" target="_blank" rel="external">thunkify-wrap</a> 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。</p>
+]]>
+    
     </summary>
     
       <category term="thunkify" scheme="http://zhuping.github.io/tags/thunkify/"/>
