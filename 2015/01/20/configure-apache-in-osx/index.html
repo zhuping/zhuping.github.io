@@ -3,17 +3,17 @@
 <head>
   <meta charset="utf-8">
   
-  <title>相册 | Junior&#39;s Blog</title>
+  <title>OSX下配置apache服务器 | Junior&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前端开发攻城狮">
-<meta property="og:type" content="website">
-<meta property="og:title" content="相册">
-<meta property="og:url" content="http://zhuping.github.io/photo/index.html">
+  <meta name="description" content="新领了Mac工作，所有很多环境都需要重新配置，配置方法和windows下又不一样，所以记录下apache的配置方法，以备后面重装系统什么的又要网上找。环境：OSX Yosemite 10.10.1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OSX下配置apache服务器">
+<meta property="og:url" content="http://zhuping.github.io/2015/01/20/configure-apache-in-osx/">
 <meta property="og:site_name" content="Junior's Blog">
-<meta property="og:description" content="前端开发攻城狮">
+<meta property="og:description" content="新领了Mac工作，所有很多环境都需要重新配置，配置方法和windows下又不一样，所以记录下apache的配置方法，以备后面重装系统什么的又要网上找。环境：OSX Yosemite 10.10.1">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="相册">
-<meta name="twitter:description" content="前端开发攻城狮">
+<meta name="twitter:title" content="OSX下配置apache服务器">
+<meta name="twitter:description" content="新领了Mac工作，所有很多环境都需要重新配置，配置方法和windows下又不一样，所以记录下apache的配置方法，以备后面重装系统什么的又要网上找。环境：OSX Yosemite 10.10.1">
 
   
     <link rel="alternative" href="/atom.xml" title="Junior&#39;s Blog" type="application/atom+xml">
@@ -196,7 +196,17 @@ ga('send', 'pageview');
 		</header>				
 	</div>
 </nav>
-      <article id="post-photo" class="article article-type-post" itemscope itemprop="blogPost">
+      <article id="post-configure-apache-in-osx" class="article article-type-post" itemscope itemprop="blogPost">
+  
+    <div class="article-meta">
+      <a href="/2015/01/20/configure-apache-in-osx/" class="article-date">
+  	<time datetime="2015-01-20T08:55:20.000Z" itemprop="datePublished">Jan 20 2015</time>
+</a>
+      
+      
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/apache/">apache</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/osx/">osx</a></li></ul>
+
+    </div>
   
   <div class="article-inner">
     
@@ -207,7 +217,7 @@ ga('send', 'pageview');
         
   
     <h1 class="article-title" itemprop="name">
-      相册
+      OSX下配置apache服务器
     </h1>
   
 
@@ -215,7 +225,53 @@ ga('send', 'pageview');
     
     <div class="article-entry" itemprop="articleBody">
       
-        
+        <p>新领了Mac工作，所有很多环境都需要重新配置，配置方法和windows下又不一样，所以记录下apache的配置方法，以备后面重装系统什么的又要网上找。<br>环境：OSX Yosemite 10.10.1</p>
+<p><a id="more"></a></p>
+<h2 id="基本操作">基本操作</h2>
+<p>因为OSX已经自带了apache服务，所有不需要自己再去下载安装。可以通过以下命令对apache进行操作：</p>
+<ol>
+<li>查看apache版本：<code>httpd -v</code></li>
+<li>启动服务：<code>sudo apachectl start</code></li>
+<li>重启服务：<code>sudo apachectl restart</code></li>
+<li>停止服务：<code>sudo apachectl stop</code><br>启动后，浏览器打开localhost可以看到It works!的页面。</li>
+</ol>
+<h2 id="设置虚拟主机">设置虚拟主机</h2>
+<p>apache默认的目录在<code>/Library/WebServer/Documents/</code>，藏的比较深，也不易平时的开发。</p>
+<ul>
+<li>修改自定义目录，执行<code>sudo vi /etc/apache2/httpd.conf</code>：</li>
+</ul>
+<figure class="highlight conf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">DocumentRoot <span class="string">"/Users/zhuping/project/"</span></div><div class="line">&lt;Directory <span class="string">"/Users/zhuping/project/"</span>&gt;</div><div class="line"><span class="keyword">...</span></div><div class="line">&lt;/Directory&gt;</div></pre></td></tr></table></figure>
+
+<p>其中<code>/Users/zhuping/project/</code>为自定义目录。</p>
+<ul>
+<li>去除不必要的设置：执行<code>sudo vi /etc/apache2/httpd.conf</code>去掉如下行前面的<code>＃</code> :</li>
+</ul>
+<figure class="highlight conf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="preprocessor">#LoadModule php5_module libexec/apache2/libphp5.so</span></div><div class="line"><span class="preprocessor">#LoadModule userdir_module libexec/apache2/mod_userdir.so</span></div><div class="line"><span class="preprocessor">#Include /private/etc/apache2/extra/httpd-userdir.conf</span></div><div class="line"><span class="preprocessor">#LoadModule authz_core_module libexec/apache2/mod_authz_core.so</span></div><div class="line"><span class="preprocessor">#LoadModule authz_host_module libexec/apache2/mod_authz_host.so</span></div></pre></td></tr></table></figure>
+
+<ul>
+<li>执行<code>sudo vi /etc/apache2/extra/httpd-userdir.conf</code>去掉如下行前面的<code>#</code>:</li>
+</ul>
+<figure class="highlight conf"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">Include</span> <span class="regexp">/private/</span>etc<span class="regexp">/apache2/</span>users<span class="comment">/*.conf</span></div></pre></td></tr></table></figure>
+
+<ul>
+<li>执行<code>cd /etc/apache2/users/</code> <code>touch zhuping.conf</code>创建一个新文件，添加如下内容：</li>
+</ul>
+<figure class="highlight conf"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">&lt;<span class="keyword">Directory</span> <span class="string">"/Users/zhuping/project/"</span>&gt;</div><div class="line">    <span class="keyword">Options</span> Indexes MultiViews</div><div class="line">    AllowOverride <span class="keyword">None</span></div><div class="line">    Require all granted</div><div class="line">&lt;/<span class="keyword">Directory</span>&gt;</div></pre></td></tr></table></figure>
+
+<ul>
+<li>修改端口号 <code>sudo vi /etc/apache2/httpd.conf</code></li>
+</ul>
+<figure class="highlight conf"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">Listen</span> <span class="number">80</span></div></pre></td></tr></table></figure>
+
+<ul>
+<li>查看log日志 <code>cat /private/var/log/apache2/sites-error_log</code></li>
+</ul>
+<h2 id="小结">小结</h2>
+<p>好记性不如烂笔头~&gt;_&lt;~ </p>
+<blockquote>
+<p>参考：<a href="http://blog.csdn.net/wyodyia/article/details/40393533" target="_blank" rel="external">http://blog.csdn.net/wyodyia/article/details/40393533</a></p>
+</blockquote>
+
       
     </div>
     <footer class="article-footer">
@@ -225,6 +281,16 @@ ga('send', 'pageview');
   </div>
   
     
+<nav id="article-nav">
+  
+  
+    <a href="/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">thunkify 和 thunkify-wrap 的源码学习</div>
+      <strong class="article-nav-caption">&gt;</strong>
+    </a>
+  
+</nav>
+
   
 </article>
 
@@ -248,7 +314,7 @@ ga('send', 'pageview');
 
 <div class="duoshuo">
 	<!-- 多说评论框 start -->
-	<div class="ds-thread" data-thread-key="photo" data-title="相册" data-url="http://zhuping.github.io/photo/index.html"></div>
+	<div class="ds-thread" data-thread-key="configure-apache-in-osx" data-title="OSX下配置apache服务器" data-url="http://zhuping.github.io/2015/01/20/configure-apache-in-osx/"></div>
 	<!-- 多说评论框 end -->
 	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
 	<script type="text/javascript">
