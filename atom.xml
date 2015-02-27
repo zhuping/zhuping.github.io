@@ -4,7 +4,7 @@
   <subtitle><![CDATA[哪里跑，biubiubiu]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://zhuping.github.io/"/>
-  <updated>2015-02-27T13:05:08.866Z</updated>
+  <updated>2015-02-27T13:09:14.993Z</updated>
   <id>http://zhuping.github.io/</id>
   
   <author>
@@ -15,11 +15,11 @@
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
   
   <entry>
-    <title><![CDATA[koa和connect框架中间件的使用区别分析]]></title>
+    <title><![CDATA[koa和connect框架中间件的调用实现分析]]></title>
     <link href="http://zhuping.github.io/2015/02/27/what-is-the-different-about-use-middleware-between-koa-and-connect/"/>
     <id>http://zhuping.github.io/2015/02/27/what-is-the-different-about-use-middleware-between-koa-and-connect/</id>
     <published>2015-02-27T09:32:22.000Z</published>
-    <updated>2015-02-27T13:04:40.000Z</updated>
+    <updated>2015-02-27T13:08:36.000Z</updated>
     <content type="html"><![CDATA[<p>node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对koa和connect的源码分析来一探究竟。</p>
 <a id="more"></a>
 
