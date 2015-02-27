@@ -5,21 +5,15 @@
   
   <title>koa和connect框架中间件的使用区别分析 | Junior&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对koa和connect的源码分析来一探究竟。
-Connect实现分析
-我们先来看个hello world的栗子">
+  <meta name="description" content="node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对koa和connect的源码分析来一探究竟。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="koa和connect框架中间件的使用区别分析">
 <meta property="og:url" content="http://zhuping.github.io/2015/02/27/what-is-the-different-about-use-middleware-between-koa-and-connect/">
 <meta property="og:site_name" content="Junior's Blog">
-<meta property="og:description" content="node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对koa和connect的源码分析来一探究竟。
-Connect实现分析
-我们先来看个hello world的栗子">
+<meta property="og:description" content="node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对koa和connect的源码分析来一探究竟。">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="koa和connect框架中间件的使用区别分析">
-<meta name="twitter:description" content="node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对koa和connect的源码分析来一探究竟。
-Connect实现分析
-我们先来看个hello world的栗子">
+<meta name="twitter:description" content="node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对koa和connect的源码分析来一探究竟。">
 
   
     <link rel="alternative" href="/atom.xml" title="Junior&#39;s Blog" type="application/atom+xml">
@@ -232,6 +226,8 @@ ga('send', 'pageview');
     <div class="article-entry" itemprop="articleBody">
       
         <p>node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对koa和connect的源码分析来一探究竟。</p>
+<a id="more"></a>
+
 <h3 id="Connect实现分析">Connect实现分析</h3>
 <p>我们先来看个hello world的栗子，connect到底是怎么使用的：</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> connect = <span class="built_in">require</span>(<span class="string">'connect'</span>);</div><div class="line"><span class="keyword">var</span> app = connect();</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">logger</span><span class="params">(req, res, next)</span> </span>{</div><div class="line">	<span class="built_in">console</span>.log(<span class="string">'%s %s'</span>, req.method, req.url);</div><div class="line">	next();</div><div class="line">}</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span><span class="params">(req, res)</span> </span>{</div><div class="line">	res.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'text/plain'</span>);</div><div class="line">	res.end(<span class="string">'hello world.'</span>);</div><div class="line">}</div><div class="line"></div><div class="line">app.use(logger)</div><div class="line">	.use(hello);</div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">	<span class="built_in">console</span>.log(<span class="string">'server running on 3000.'</span>);</div><div class="line">});</div></pre></td></tr></table></figure>
