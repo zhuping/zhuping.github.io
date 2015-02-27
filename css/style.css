@@ -838,8 +838,10 @@ a {
 .article-entry li code {
   padding: 1px 3px;
   margin: 0 3px;
-  background: #ddd;
+  background: rgba(0,0,0,0.04);
   border: 1px solid #ccc;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
   font-family: Menlo, Monaco, "Andale Mono", "lucida console", "Courier New", monospace;
 }
 .article-entry blockquote {
@@ -876,7 +878,6 @@ a {
   font-weight: bold;
   font-size: 1.3em;
   color: #574c4c;
-  border-bottom: 1px solid #ddd;
 }
 .article-entry strong {
   font-weight: bold;

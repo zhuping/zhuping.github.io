@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives | Junior&#39;s Blog</title>
+  <title>Archives: 2015/2 | Junior&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="前端开发攻城狮">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Junior's Blog">
-<meta property="og:url" content="http://zhuping.github.io/archives/">
+<meta property="og:url" content="http://zhuping.github.io/archives/2015/02/">
 <meta property="og:site_name" content="Junior's Blog">
 <meta property="og:description" content="前端开发攻城狮">
 <meta name="twitter:card" content="summary">
@@ -244,110 +244,6 @@ ga('send', 'pageview');
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> koa = <span class="built_in">require</span>(<span class="string">'koa'</span>);</div><div class="line"><span class="keyword">var</span> app = koa();</div><div class="line"></div><div class="line">app.use(<span class="function"><span class="keyword">function</span> *<span class="params">(next)</span> </span>{</div><div class="line">	<span class="keyword">var</span> start = <span class="keyword">new</span> <span class="built_in">Date</span>;</div><div class="line">	<span class="keyword">yield</span> next;</div><div class="line">	<span class="keyword">var</span> ms = <span class="keyword">new</span> <span class="built_in">Date</span> - start;</div><div class="line">	<span class="built_in">console</span>.log(<span class="string">'%s %s - %s'</span>, <span class="keyword">this</span>.method, <span class="keyword">this</span>.url, ms);</div><div class="line">});</div><div class="line"></div><div class="line">app.use(<span class="function"><span class="keyword">function</span> *<span class="params">()</span> </span>{</div><div class="line">	<span class="keyword">this</span>.body = <span class="string">'Hello World'</span>;</div><div class="line">});</div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">	<span class="built_in">console</span>.log(<span class="string">'server running on 3000.'</span>);</div><div class="line">});</div></pre></td></tr></table></figure>
 
 
-      
-    </div>
-    <footer class="article-footer">
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-configure-apache-in-osx" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/20/configure-apache-in-osx/" class="article-date">
-  	<time datetime="2015-01-20T08:55:20.000Z" itemprop="datePublished">Jan 20 2015</time>
-</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/apache/">apache</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/osx/">osx</a></li></ul>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/20/configure-apache-in-osx/">OSX下配置apache服务器</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>新领了Mac工作，所有很多环境都需要重新配置，配置方法和windows下又不一样，所以记录下apache的配置方法，以备后面重装系统什么的又要网上找。<br>环境：OSX Yosemite 10.10.1</p>
-<p>
-        
-          <p class="article-more-link">
-            <a href="/2015/01/20/configure-apache-in-osx/#more">more >></a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-thunkify-and-thunkify-wrap-souce-code-learning" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/" class="article-date">
-  	<time datetime="2014-12-17T03:42:08.000Z" itemprop="datePublished">Dec 17 2014</time>
-</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/thunkify/">thunkify</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码/">源码</a></li></ul>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/">thunkify 和 thunkify-wrap 的源码学习</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 <a href="https://github.com/tj/node-thunkify" target="_blank" rel="external">thunkify</a> 和 <a href="https://github.com/node-modules/thunkify-wrap" target="_blank" rel="external">thunkify-wrap</a> 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。</p>
-
-        
-          <p class="article-more-link">
-            <a href="/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/#more">more >></a>
-          </p>
-        
       
     </div>
     <footer class="article-footer">

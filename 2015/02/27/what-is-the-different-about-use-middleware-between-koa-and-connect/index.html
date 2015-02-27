@@ -3,17 +3,23 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Archives | Junior&#39;s Blog</title>
+  <title>koa和connect框架中间件的使用区别分析 | Junior&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta name="description" content="前端开发攻城狮">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Junior's Blog">
-<meta property="og:url" content="http://zhuping.github.io/archives/">
+  <meta name="description" content="node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对koa和connect的源码分析来一探究竟。
+Connect实现分析
+我们先来看个hello world的栗子">
+<meta property="og:type" content="article">
+<meta property="og:title" content="koa和connect框架中间件的使用区别分析">
+<meta property="og:url" content="http://zhuping.github.io/2015/02/27/what-is-the-different-about-use-middleware-between-koa-and-connect/">
 <meta property="og:site_name" content="Junior's Blog">
-<meta property="og:description" content="前端开发攻城狮">
+<meta property="og:description" content="node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对koa和connect的源码分析来一探究竟。
+Connect实现分析
+我们先来看个hello world的栗子">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Junior's Blog">
-<meta name="twitter:description" content="前端开发攻城狮">
+<meta name="twitter:title" content="koa和connect框架中间件的使用区别分析">
+<meta name="twitter:description" content="node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对koa和connect的源码分析来一探究竟。
+Connect实现分析
+我们先来看个hello world的栗子">
 
   
     <link rel="alternative" href="/atom.xml" title="Junior&#39;s Blog" type="application/atom+xml">
@@ -196,9 +202,7 @@ ga('send', 'pageview');
 		</header>				
 	</div>
 </nav>
-      
-  
-    <article id="post-what-is-the-different-about-use-middleware-between-koa-and-connect" class="article article-type-post" itemscope itemprop="blogPost">
+      <article id="post-what-is-the-different-about-use-middleware-between-koa-and-connect" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
       <a href="/2015/02/27/what-is-the-different-about-use-middleware-between-koa-and-connect/" class="article-date">
@@ -218,8 +222,8 @@ ga('send', 'pageview');
       <header class="article-header">
         
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/02/27/what-is-the-different-about-use-middleware-between-koa-and-connect/">koa和connect框架中间件的使用区别分析</a>
+    <h1 class="article-title" itemprop="name">
+      koa和connect框架中间件的使用区别分析
     </h1>
   
 
@@ -252,119 +256,59 @@ ga('send', 'pageview');
     </footer>
   </div>
   
-</article>
-
-
-
-
-
-
-  
-    <article id="post-configure-apache-in-osx" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2015/01/20/configure-apache-in-osx/" class="article-date">
-  	<time datetime="2015-01-20T08:55:20.000Z" itemprop="datePublished">Jan 20 2015</time>
-</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/apache/">apache</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/osx/">osx</a></li></ul>
-
-    </div>
-  
-  <div class="article-inner">
     
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
+<nav id="article-nav">
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2015/01/20/configure-apache-in-osx/">OSX下配置apache服务器</a>
-    </h1>
   
+    <a href="/2015/01/20/configure-apache-in-osx/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">OSX下配置apache服务器</div>
+      <strong class="article-nav-caption">&gt;</strong>
+    </a>
+  
+</nav>
 
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>新领了Mac工作，所有很多环境都需要重新配置，配置方法和windows下又不一样，所以记录下apache的配置方法，以备后面重装系统什么的又要网上找。<br>环境：OSX Yosemite 10.10.1</p>
-<p>
-        
-          <p class="article-more-link">
-            <a href="/2015/01/20/configure-apache-in-osx/#more">more >></a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      
-      
-    </footer>
-  </div>
   
 </article>
 
 
+<div class="share">
+	<!-- JiaThis Button BEGIN -->
+	<div class="jiathis_style">
+		<span class="jiathis_txt">分享到：</span>
+		<a class="jiathis_button_tsina"></a>
+		<a class="jiathis_button_cqq"></a>
+		<a class="jiathis_button_douban"></a>
+		<a class="jiathis_button_weixin"></a>
+		<a class="jiathis_button_tumblr"></a>
+		<a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+	</div>
+	<script type="text/javascript" src="http://v3.jiathis.com/code/jia.js?uid=1405949716054953" charset="utf-8"></script>
+	<!-- JiaThis Button END -->
+</div>
 
 
 
-
-  
-    <article id="post-thunkify-and-thunkify-wrap-souce-code-learning" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/" class="article-date">
-  	<time datetime="2014-12-17T03:42:08.000Z" itemprop="datePublished">Dec 17 2014</time>
-</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/thunkify/">thunkify</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码/">源码</a></li></ul>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/">thunkify 和 thunkify-wrap 的源码学习</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 <a href="https://github.com/tj/node-thunkify" target="_blank" rel="external">thunkify</a> 和 <a href="https://github.com/node-modules/thunkify-wrap" target="_blank" rel="external">thunkify-wrap</a> 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。</p>
-
-        
-          <p class="article-more-link">
-            <a href="/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/#more">more >></a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      
-      
-    </footer>
-  </div>
-  
-</article>
+<div class="duoshuo">
+	<!-- 多说评论框 start -->
+	<div class="ds-thread" data-thread-key="what-is-the-different-about-use-middleware-between-koa-and-connect" data-title="koa和connect框架中间件的使用区别分析" data-url="http://zhuping.github.io/2015/02/27/what-is-the-different-about-use-middleware-between-koa-and-connect/"></div>
+	<!-- 多说评论框 end -->
+	<!-- 多说公共JS代码 start (一个网页只需插入一次) -->
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"juniorzhp"};
+	(function() {
+		var ds = document.createElement('script');
+		ds.type = 'text/javascript';ds.async = true;
+		ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+		ds.charset = 'UTF-8';
+		(document.getElementsByTagName('head')[0] 
+		 || document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- 多说公共JS代码 end -->
+</div>
 
 
 
-
-
-
-  
-  
 
       <footer id="footer">
   <div class="outer">
