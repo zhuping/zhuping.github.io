@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   
-  <title>Tag: javascript | Junior&#39;s Blog</title>
+  <title>Tag: mysql | Junior&#39;s Blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
   <meta name="description" content="前端开发攻城狮">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Junior's Blog">
-<meta property="og:url" content="http://zhuping.github.io/tags/javascript/">
+<meta property="og:url" content="http://zhuping.github.io/tags/mysql/">
 <meta property="og:site_name" content="Junior's Blog">
 <meta property="og:description" content="前端开发攻城狮">
 <meta name="twitter:card" content="summary">
@@ -198,15 +198,15 @@ ga('send', 'pageview');
 </nav>
       
   
-    <article id="post-what-is-the-different-about-use-middleware-between-koa-and-connect" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-how-to-use-aws-to-build-own-site" class="article article-type-post" itemscope itemprop="blogPost">
   
     <div class="article-meta">
-      <a href="/2015/02/27/what-is-the-different-about-use-middleware-between-koa-and-connect/" class="article-date">
-  	<time datetime="2015-02-27T09:32:22.000Z" itemprop="datePublished">Feb 27 2015</time>
+      <a href="/2015/11/03/how-to-use-aws-to-build-own-site/" class="article-date">
+  	<time datetime="2015-11-03T10:16:49.000Z" itemprop="datePublished">Nov 3 2015</time>
 </a>
       
       
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码/">源码</a></li></ul>
+  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/aws/">aws</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/mysql/">mysql</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/">nginx</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/node/">node</a></li></ul>
 
     </div>
   
@@ -219,7 +219,7 @@ ga('send', 'pageview');
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2015/02/27/what-is-the-different-about-use-middleware-between-koa-and-connect/">koa和connect框架中间件的调用实现分析</a>
+      <a class="article-title" href="/2015/11/03/how-to-use-aws-to-build-own-site/">AWS服务器搭建个人网站</a>
     </h1>
   
 
@@ -227,63 +227,11 @@ ga('send', 'pageview');
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对 koa 和 connect 的源码分析来一探究竟。</p>
-
+        <p>开始前先打个广告，使用koa搭建的个人网站<a href="http://www.toomany.co/" target="_blank" rel="external">图米粒</a>，一个专注豆瓣相册分享的网站。先前使用了阿里云的免费15天服务器，下午刚部署完成，晚上就被封了80端口。也懒的去备案了，所以迁移到了AWS上。不用担心80端口被封掉，而且能免费使用1年，哈哈哈。下面就记录下如何在aws上部署node项目，图米粒使用了koa+mysql+nginx，也算是一个环境搭建记录吧，方便后面查看。</p>
+<p>
         
           <p class="article-more-link">
-            <a href="/2015/02/27/what-is-the-different-about-use-middleware-between-koa-and-connect/#more">more >></a>
-          </p>
-        
-      
-    </div>
-    <footer class="article-footer">
-      
-      
-    </footer>
-  </div>
-  
-</article>
-
-
-
-
-
-
-  
-    <article id="post-thunkify-and-thunkify-wrap-souce-code-learning" class="article article-type-post" itemscope itemprop="blogPost">
-  
-    <div class="article-meta">
-      <a href="/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/" class="article-date">
-  	<time datetime="2014-12-17T03:42:08.000Z" itemprop="datePublished">Dec 17 2014</time>
-</a>
-      
-      
-  <ul class="article-tag-list"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/javascript/">javascript</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/thunkify/">thunkify</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/源码/">源码</a></li></ul>
-
-    </div>
-  
-  <div class="article-inner">
-    
-      <input type="hidden" class="isFancy" />
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/">thunkify 和 thunkify-wrap 的源码学习</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>最近一直都在看些源码，源码学习不仅能提高自身的代码阅读能力，还能学习优秀框架的设置思路，所以多多益善啊！今天要介绍的是 <a href="https://github.com/tj/node-thunkify" target="_blank" rel="external">thunkify</a> 和 <a href="https://github.com/node-modules/thunkify-wrap" target="_blank" rel="external">thunkify-wrap</a> 框架，前者是大神TJ开发的，后者是国内Node社区的活跃贡献者dead-horse开发的。本文主要是作为笔者学习的一个记录，如果有表达不准确或者错误的地方，还望指出。</p>
-
-        
-          <p class="article-more-link">
-            <a href="/2014/12/17/thunkify-and-thunkify-wrap-souce-code-learning/#more">more >></a>
+            <a href="/2015/11/03/how-to-use-aws-to-build-own-site/#more">more >></a>
           </p>
         
       

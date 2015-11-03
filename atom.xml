@@ -4,7 +4,7 @@
   <subtitle><![CDATA[哪里跑，biubiubiu]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://zhuping.github.io/"/>
-  <updated>2015-07-19T08:07:05.260Z</updated>
+  <updated>2015-11-03T10:46:50.060Z</updated>
   <id>http://zhuping.github.io/</id>
   
   <author>
@@ -15,11 +15,79 @@
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[AWS服务器搭建个人网站]]></title>
+    <link href="http://zhuping.github.io/2015/11/03/how-to-use-aws-to-build-own-site/"/>
+    <id>http://zhuping.github.io/2015/11/03/how-to-use-aws-to-build-own-site/</id>
+    <published>2015-11-03T10:16:49.000Z</published>
+    <updated>2015-11-03T10:45:49.000Z</updated>
+    <content type="html"><![CDATA[<p>开始前先打个广告，使用koa搭建的个人网站<a href="http://www.toomany.co/" target="_blank" rel="external">图米粒</a>，一个专注豆瓣相册分享的网站。先前使用了阿里云的免费15天服务器，下午刚部署完成，晚上就被封了80端口。也懒的去备案了，所以迁移到了AWS上。不用担心80端口被封掉，而且能免费使用1年，哈哈哈。下面就记录下如何在aws上部署node项目，图米粒使用了koa+mysql+nginx，也算是一个环境搭建记录吧，方便后面查看。</p>
+<p><a id="more"></a></p>
+<h3 id="申请aws账号">申请aws账号</h3>
+<p>首先需要去<a href="https://aws.amazon.com/cn/" target="_blank" rel="external">aws主页</a>注册一个亚马逊账号，注册好后根据AWS账户的基本注册步骤：</p>
+<ol>
+<li>创建账号（CREATE ACCOUNT）</li>
+<li>填写支付方式（PAYMENT METHOD）</li>
+<li>身份确认（IDENTITY VERIFICATION）</li>
+<li>选择支持计划（SUPPORT PLAN）</li>
+<li>最后确认（CONFIRMATION）</li>
+</ol>
+<p>这里需要注意第2点和第3点，绑定你的信用卡后，它会有个短信验证，会在你卡里扣除1美元，据说是能<a href="http://www.zhihu.com/question/19990648" target="_blank" rel="external">退给你</a>的。还有就是身份确认的时候，填完手机号码后，会从亚马逊打过来一个pin码验证的电话，等听到让你输入pin码的时候，输入4位pin码就可以了。我当初验证了好几遍都通不过，后来干脆手机收不到打过来的电话了。最终用了公司的座机才搞定。最后申请成功后记得把绑定的银行卡删掉，不然1年后免费到期，就会在你的信用卡上扣钱了。</p>
+<h3 id="创建EC2实例">创建EC2实例</h3>
+<p>申请成功后，就可以创建实例了。这个创建流程网上有很多，随便搜一下就能出来很多。我当初就是参考了这个<a href="http://bropaul.com/post/aws-walkthrough" target="_blank" rel="external">教程</a>。里面选择配置的时候，如果选择了收费的选项，就会产生费用。免费的都会有标注。EC2默认是不开启<code>80</code>端口的，所以需要自己手动去开启，我当初就被这个坑了很久。首先找到<strong>网络与安全</strong><code>NETWORK &amp; SECURITY</code>，选择<strong>安全组</strong><code>Security Groups</code>，找到你正在使用的组，右键<strong>编辑入站规则</strong><code>Edit inbound rules</code>，添加规则，如下图<br><img src="http://7xndo3.com1.z0.glb.clouddn.com/QQ20151103-0.png" alt=""><br>这样设置完后，就能访问<code>80</code>端口了。</p>
+<h3 id="连接实例">连接实例</h3>
+<p>在终端中输入<code>chmod 400 xxx.pem</code><br>然后输入<code>ssh -i &quot;xxx.pem&quot; ubuntu@your_public_ip</code><br>首次连接应该是<code>ubuntu</code>账户，先切换到<code>root</code>账户下面：</p>
+<ul>
+<li>设置<code>root</code>密码：<code>sudo passwd root</code></li>
+<li>切换到<code>root</code>账户：<code>sudo su root</code>   </li>
+</ul>
+<p>到此为止，你已成功连上服务器，不过现在这台服务器什么都没有，下面我就来介绍下如何部署node环境。</p>
+<h3 id="Node部署">Node部署</h3>
+<ul>
+<li>安装<code>git</code>：<code>apt-get install git</code></li>
+<li>配置git账户：</li>
+</ul>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">$ git config --global user.name <span class="string">"John Doe"</span></div><div class="line">$ git config --global user.email johndoe@example.com</div></pre></td></tr></table></figure>
+
+<ul>
+<li>生成<code>git ssh</code>：<code>ssh-keygen</code></li>
+<li>安装<code>nvm</code>：可以参考<a href="http://jingyan.baidu.com/article/046a7b3edebf38f9c27fa9bc.html" target="_blank" rel="external">这个</a></li>
+<li>把你的项目代码拉到服务器本地：<code>git clone your_project_address</code></li>
+<li>安装依赖：<code>npm install</code></li>
+<li>安装<code>mysql</code>：参考<a href="http://wiki.ubuntu.org.cn/MySQL" target="_blank" rel="external">文档</a>，安装完后创建你需要用到的数据库，这里需要注意下编码问题，在创建数据库的时候要设置编码<code>create database toomany character set utf8;</code>如果不设置编码，遇到中文的内容总会乱码，当初也是坑了我很久。</li>
+<li>接下来全局安装一个<code>pm2</code>来启动node项目：<code>npm install pm2 -g</code>。目前也没搞清楚它的配置文件，我这里还是用很原始的方法来启动的。<br><code>NODE_ENV=production pm2 start server.js --name toomany --node-args=&#39;--harmony-generators&#39;</code></li>
+<li>跑起来后可以使用<code>pm2 list</code>查看正在运行的进程</li>
+<li>通过<code>curl 127.0.0.1:10080</code>来查看是否已经成功跑起来了，如果返回如下结果就是ok了<br><img src="http://7xndo3.com1.z0.glb.clouddn.com/QQ20151103-2.png" alt=""><br>下面就要通过<code>nginx</code>把我们的域名反向代理到这个地址上面去</li>
+<li>安装<code>nginx</code>：参考<a href="http://wiki.ubuntu.org.cn/Nginx" target="_blank" rel="external">文档</a></li>
+<li>配置<code>nginx</code>：</li>
+</ul>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div></pre></td><td class="code"><pre><div class="line">server {</div><div class="line">  listen        80;</div><div class="line">  server_name   toomany.co;</div><div class="line">  return        301 http://www.toomany.co$request_uri;</div><div class="line">}</div><div class="line">server {</div><div class="line">  listen       80;</div><div class="line">  server_name  www.toomany.co;</div><div class="line">  location / {</div><div class="line">   proxy_set_header Host $http_host;</div><div class="line">   proxy_set_header X-Real-IP  $remote_addr;</div><div class="line">   proxy_set_header X-Forwarded-Proto  $scheme;</div><div class="line">   proxy_set_header X-Forwarded-For $remote_addr;</div><div class="line">   proxy_pass http://127.0.0.1:10080;</div><div class="line">   }</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>配置完重启<code>nginx</code>后，直接访问你的域名，就能看到你所配置的项目了。当然，这里你服务器的<code>ip</code>事先已经关联你的域名了，我的域名是在<code>godaddy</code>上买的，可以参考<a href="http://www.51php.com/domain/13235.html" target="_blank" rel="external">这个</a>介绍如何绑定你的服务器。</p>
+<h3 id="小结">小结</h3>
+<p>服务器配置node环境备忘录</p>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>开始前先打个广告，使用koa搭建的个人网站<a href="http://www.toomany.co/" target="_blank" rel="external">图米粒</a>，一个专注豆瓣相册分享的网站。先前使用了阿里云的免费15天服务器，下午刚部署完成，晚上就被封了80端口。也懒的去备案了，所以迁移到了AWS上。不用担心80端口被封掉，而且能免费使用1年，哈哈哈。下面就记录下如何在aws上部署node项目，图米粒使用了koa+mysql+nginx，也算是一个环境搭建记录吧，方便后面查看。</p>
+<p>]]>
+    
+    </summary>
+    
+      <category term="aws" scheme="http://zhuping.github.io/tags/aws/"/>
+    
+      <category term="node" scheme="http://zhuping.github.io/tags/node/"/>
+    
+      <category term="mysql" scheme="http://zhuping.github.io/tags/mysql/"/>
+    
+      <category term="nginx" scheme="http://zhuping.github.io/tags/nginx/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[koa和connect框架中间件的调用实现分析]]></title>
     <link href="http://zhuping.github.io/2015/02/27/what-is-the-different-about-use-middleware-between-koa-and-connect/"/>
     <id>http://zhuping.github.io/2015/02/27/what-is-the-different-about-use-middleware-between-koa-and-connect/</id>
     <published>2015-02-27T09:32:22.000Z</published>
-    <updated>2015-02-27T15:58:28.000Z</updated>
+    <updated>2015-08-24T14:52:05.000Z</updated>
     <content type="html"><![CDATA[<p>node的兴起，随之产生的各类框架也如雨后春笋般的出现。现在主流的各类node框架，主要包括koa、express、iojs等。这些框架得以应用广泛，也离不开丰富的中间件资源。一般做一个项目，我们都需要use很多的中间件进来。那么这些框架，它内部是怎样来执行这些中间件的呢？今天我们就通过对 koa 和 connect 的源码分析来一探究竟。</p>
 <a id="more"></a>
 
@@ -29,7 +97,7 @@
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> connect = <span class="built_in">require</span>(<span class="string">'connect'</span>);</div><div class="line"><span class="keyword">var</span> app = connect();</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">logger</span><span class="params">(req, res, next)</span> </span>{</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'%s %s'</span>, req.method, req.url);</div><div class="line">    next();</div><div class="line">}</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">hello</span><span class="params">(req, res)</span> </span>{</div><div class="line">    res.setHeader(<span class="string">'Content-Type'</span>, <span class="string">'text/plain'</span>);</div><div class="line">    res.end(<span class="string">'hello world.'</span>);</div><div class="line">}</div><div class="line"></div><div class="line">app.use(logger)</div><div class="line">    .use(hello);</div><div class="line"></div><div class="line">app.listen(<span class="number">3000</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'server running on 3000.'</span>);</div><div class="line">});</div></pre></td></tr></table></figure>
 
 <p>这个栗子中有两个中间件，分别是<code>logger</code>和<code>hello</code>，并通过<code>use</code>方法逐个加载进去。你可能已经注意到，两个中间件函数参数个数不一样，<code>logger</code>多了一个<code>next</code>参数，在输出完日志后执行了这个函数。那么我们来看下在connect内部到底是怎么实现中间件逐个执行的，这个<code>next</code>到底是个什么。</p>
-<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">app.use = <span class="function"><span class="keyword">function</span><span class="params">(route, fn)</span> </span>{</div><div class="line">    <span class="comment">//some code</span></div><div class="line">    <span class="keyword">this</span>.stack.push({ route: route, handle: fn });</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">}</div></pre></td></tr></table></figure>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div></pre></td><td class="code"><pre><div class="line">app.use = <span class="function"><span class="keyword">function</span><span class="params">(route, fn)</span> </span>{</div><div class="line">    <span class="comment">// default route to '/'</span></div><div class="line">    <span class="keyword">if</span> (<span class="string">'string'</span> != <span class="keyword">typeof</span> route) {</div><div class="line">        fn = route;</div><div class="line">        route = <span class="string">'/'</span>;</div><div class="line">    }</div><div class="line">    </div><div class="line">    <span class="comment">//some code</span></div><div class="line">    </div><div class="line">    <span class="keyword">this</span>.stack.push({ route: route, handle: fn });</div><div class="line"></div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>;</div><div class="line">}</div></pre></td></tr></table></figure>
 
 <p>这段代码是<code>use</code>方法的实现，我们每添加一个中间件，<code>use</code>都会把它塞到一个事先定义好的空数组中<code>app.stack = [];</code>。接下来我们看下，它是怎么实现持续调用这个数组中的中间件的。</p>
 <figure class="highlight js"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">app.handle = <span class="function"><span class="keyword">function</span><span class="params">(req, res, out)</span> </span>{</div><div class="line">    <span class="comment">//some code</span></div><div class="line">    <span class="function"><span class="keyword">function</span> <span class="title">next</span><span class="params">(err)</span> </span>{</div><div class="line">        <span class="comment">// next callback</span></div><div class="line">        <span class="keyword">var</span> layer = stack[index++];</div><div class="line">        <span class="comment">// all done</span></div><div class="line">        <span class="keyword">if</span> (!layer) {</div><div class="line">            defer(done, err);</div><div class="line">            <span class="keyword">return</span>;</div><div class="line">        }</div><div class="line">        <span class="comment">// call the layer handle</span></div><div class="line">        call(layer.handle, route, err, req, res, next);</div><div class="line">    }</div><div class="line">    next();</div><div class="line">}</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">call</span><span class="params">(handle, route, err, req, res, next)</span> </span>{</div><div class="line">    <span class="keyword">try</span> {</div><div class="line">        handle(req, res, next);</div><div class="line">        <span class="keyword">return</span>;</div><div class="line">    } <span class="keyword">catch</span> (e) {</div><div class="line">        err = e;</div><div class="line">    }</div><div class="line">    next(err);</div><div class="line">}</div></pre></td></tr></table></figure>
