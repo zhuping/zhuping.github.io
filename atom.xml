@@ -4,7 +4,7 @@
   <subtitle><![CDATA[哪里跑，biubiubiu]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://zhuping.github.io/"/>
-  <updated>2015-11-03T10:46:50.060Z</updated>
+  <updated>2015-12-13T09:05:04.999Z</updated>
   <id>http://zhuping.github.io/</id>
   
   <author>
@@ -13,6 +13,72 @@
   </author>
   
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
+  
+  <entry>
+    <title><![CDATA[Flux应用框架学习分析]]></title>
+    <link href="http://zhuping.github.io/2015/12/13/flux-source-code-learning/"/>
+    <id>http://zhuping.github.io/2015/12/13/flux-source-code-learning/</id>
+    <published>2015-12-13T09:02:48.000Z</published>
+    <updated>2015-12-13T09:04:25.000Z</updated>
+    <content type="html"><![CDATA[<h1 id="Flux应用框架学习分析">Flux应用框架学习分析</h1>
+<p>今年FB的<a href="https://facebook.github.io/react/" target="_blank" rel="external">React</a>在前端界受到了广泛的关注，广大码农纷纷投入到学习React的阵营中，我也不例外。React标榜自己只是个UI，并不是一个完整的MVC框架，所以一时出现了很多基于React的MVC框架，其中<a href="https://github.com/facebook/flux" target="_blank" rel="external">flux</a>、<a href="https://github.com/reflux/refluxjs" target="_blank" rel="external">reflux</a>、<a href="https://github.com/rackt/redux" target="_blank" rel="external">redux</a>三个框架最为关注。笔者也没在实际项目中使用过React或者任何框架，所以只是想通过<a href="https://github.com/facebook/flux/tree/master/examples/flux-todomvc" target="_blank" rel="external">todomvc</a>这个例子，浅显得分析下flux在项目中的来龙去脉，如果描述有误或者不正确的地方还望指出。</p>
+<a id="more"></a>
+
+<h3 id="Flux介绍">Flux介绍</h3>
+<p>flux主要包括四部分：</p>
+<ul>
+<li>action：动作事件，可以理解为一个鼠标点击或者是键盘操作</li>
+<li>dispatcher：分发者，接受到action后分配到各个store</li>
+<li>store：数据和逻辑部分</li>
+<li>views：视图页面，具有监听store功能的页面也称为controller-views   </li>
+</ul>
+<p><img src="http://7xndo3.com1.z0.glb.clouddn.com/flux-diagram-white-background.png" alt=""><br>他们之间的联系可以用官网的上图来说明，呈单向数据流环状流程。现在看不懂这张图不要紧，我们可以先来看看代码，等看完todomvc这个demo应该能更好的理解这个图了。</p>
+<h4 id="views">views</h4>
+<p>整个demo主要划分为四个组件，一个是最外面红色部分的大容器，用来容纳其余的子组件。里面包含<code>Header</code>、<code>MainSection</code>、<code>Footer</code>三个子组件，三个子组件内部又包含了更小粒度的子组件。如下图所示：<br><img src="http://7xndo3.com1.z0.glb.clouddn.com/屏幕快照%202015-12-11%20下午4.20.58.png" alt=""></p>
+<p>那先来看下<code>TodoApp</code>这个入口文件做了什么，初始状态获取了存在store中的数据，并把数据通过<code>this.props</code>的方式传递给子组件<code>MainSection</code>。等到render完组件后添加对store的事件监听，以及卸载组件后移除对store的监听。所以这个位于最顶层的view，也是一个controller-views。 </p>
+<h4 id="action">action</h4>
+<p>接下来看下三个子组件的内部做了什么，除了加载各自内部子组件及数据传递外，我们可以看到凡是涉及到鼠标或者键盘操作的地方，都去调用了<code>TodoAction</code>中的方法。在<code>TodoAction</code>中包含了所有的操作，包括新建、更新、切换及删除。所以这个<code>TodoAction</code>正是上面流程图中对应的<code>Action Creators</code>，他的作用主要是负责接收所有的事件，并且把action传递给分发者<code>dispatcher</code>。</p>
+<h4 id="dispatcher">dispatcher</h4>
+<p>当dispatcher接收到action后包装成为一个<code>payload</code>，包括<code>actionType</code>值及其他业务数据，并且调用dispatch方法。在dispatcher内部主要包括四个方法：<code>register</code>，<code>unregister</code>，<code>waitFor</code>，<code>dispatch</code>。<code>payload</code>的状态也可以分为四个状态：</p>
+<ul>
+<li>未开始：<code>Dispatcher_isPending = false</code></li>
+<li>开始：<code>Dispatcher_isPending = true</code></li>
+<li>分发中：<code>Dispatcher_isDispatching = true</code></li>
+<li>结束分发：<code>Dispatcher_isHandled = true</code></li>
+</ul>
+<p>这里dispatch调用了通过<code>register</code>方法注册的callback函数。</p>
+<h4 id="store">store</h4>
+<p>在这个demo中，入口文件<code>TodoApp</code>主动调用了TodoStore中的register方法，主要是用来注册<code>dispatcher</code>的回调函数。回调函数接收到从action传过来的数据后，通过switch方法来匹配到具体的业务操作中去。需要注意的一点是，这里store会收到所有action的通知，只能通过类型判断，来匹配自己所需要的。等做完操作后，store必须emit一个事件出来，因为前面提到的，最顶层的controller-views已经添加了对store的监听用来更新state，只有这样数据更新后才能体现到页面上来。这样再回过头去上面那张流程图，是不是觉得很清晰了呢。</p>
+<h3 id="小结">小结</h3>
+<p>我们可以把flux整个流程归结为以下几点：</p>
+<ul>
+<li>View 告知 Action Creator 准备一个 action</li>
+<li>Action Creator 做好 action 并将其发送给 Dispatcher</li>
+<li>Dispatcher 按照顺序将 action 传递给 store。每一个 store 都会受到所有的 action 通知，然后自行觉得是否对这个 action 做出响应，更新 state</li>
+<li>一旦 store 更新 state 完毕，就会告知订阅了该 store 的 controller view</li>
+<li>这些 controller view 就会向 store 请求更新了的 state</li>
+<li>从 store 中获得 state 之后，view controller 将会让它所管辖的子 view 渲染新的 state</li>
+</ul>
+<p>flux其实就是一个订阅发布模式，但与传统的pub/sub模式区别在于，flux的每一个store都会受到所有action的通知，需要通过一个type值来过滤响应，然后emit一个事件，让controller view来监听更新view。因为存在这种需要通过自己去匹配过滤type的行为，也让flux成为很多人吐槽的地方，所以有人开始重新造轮子了，去掉了dispatcher这层，让action和store自带了pub/sub功能，对于使用者来说代码更为简洁了。后面我将来介绍下reflux和redux是怎么实现这个过程的。</p>
+<h3 id="参考">参考</h3>
+<blockquote>
+<p><a href="http://zhuanlan.zhihu.com/FrontendMagazine/20263396" target="_blank" rel="external">http://zhuanlan.zhihu.com/FrontendMagazine/20263396</a></p>
+</blockquote>
+]]></content>
+    <summary type="html">
+    <![CDATA[<h1 id="Flux应用框架学习分析">Flux应用框架学习分析</h1>
+<p>今年FB的<a href="https://facebook.github.io/react/" target="_blank" rel="external">React</a>在前端界受到了广泛的关注，广大码农纷纷投入到学习React的阵营中，我也不例外。React标榜自己只是个UI，并不是一个完整的MVC框架，所以一时出现了很多基于React的MVC框架，其中<a href="https://github.com/facebook/flux" target="_blank" rel="external">flux</a>、<a href="https://github.com/reflux/refluxjs" target="_blank" rel="external">reflux</a>、<a href="https://github.com/rackt/redux" target="_blank" rel="external">redux</a>三个框架最为关注。笔者也没在实际项目中使用过React或者任何框架，所以只是想通过<a href="https://github.com/facebook/flux/tree/master/examples/flux-todomvc" target="_blank" rel="external">todomvc</a>这个例子，浅显得分析下flux在项目中的来龙去脉，如果描述有误或者不正确的地方还望指出。</p>
+]]>
+    
+    </summary>
+    
+      <category term="react" scheme="http://zhuping.github.io/tags/react/"/>
+    
+      <category term="flux" scheme="http://zhuping.github.io/tags/flux/"/>
+    
+      <category term="源码" scheme="http://zhuping.github.io/tags/%E6%BA%90%E7%A0%81/"/>
+    
+  </entry>
   
   <entry>
     <title><![CDATA[AWS服务器搭建个人网站]]></title>
