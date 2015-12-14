@@ -4,7 +4,7 @@
   <subtitle><![CDATA[哪里跑，biubiubiu]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://zhuping.github.io/"/>
-  <updated>2015-12-14T08:14:58.299Z</updated>
+  <updated>2015-12-14T08:32:38.667Z</updated>
   <id>http://zhuping.github.io/</id>
   
   <author>
@@ -19,7 +19,7 @@
     <link href="http://zhuping.github.io/2015/12/13/flux-source-code-learning/"/>
     <id>http://zhuping.github.io/2015/12/13/flux-source-code-learning/</id>
     <published>2015-12-13T09:02:48.000Z</published>
-    <updated>2015-12-14T08:14:41.000Z</updated>
+    <updated>2015-12-14T08:31:38.000Z</updated>
     <content type="html"><![CDATA[<p>今年FB的<a href="https://facebook.github.io/react/" target="_blank" rel="external">React</a>在前端界受到了广泛的关注，广大码农纷纷投入到学习React的阵营中，我也不例外。React标榜自己只是个UI，并不是一个完整的MVC框架，所以一时出现了很多基于React的MVC框架，其中以<a href="https://github.com/facebook/flux" target="_blank" rel="external">flux</a>、<a href="https://github.com/reflux/refluxjs" target="_blank" rel="external">reflux</a>、<a href="https://github.com/rackt/redux" target="_blank" rel="external">redux</a>最为关注。笔者也没在实际项目中使用过React或者任何框架，所以只是想通过<a href="https://github.com/facebook/flux/tree/master/examples/flux-todomvc" target="_blank" rel="external">todomvc</a>这个例子，浅显得分析下flux在项目中的来龙去脉，如果描述有误或者不正确的地方还望指出。</p>
 <a id="more"></a>
 
@@ -45,7 +45,7 @@
 <li>分发中：<code>Dispatcher_isDispatching = true</code></li>
 <li>结束分发：<code>Dispatcher_isHandled = true</code></li>
 </ul>
-<p>这里dispatch调用了通过<code>register</code>方法注册的callback函数。</p>
+<p>这里dispatch调用了通过<code>register</code>方法注册的callback函数。如果此时注册了多个store，dispatch会遍历所有的callback函数，直到找到目标为止，数据一多有些资源浪费。</p>
 <h4 id="store">store</h4>
 <p>在这个demo中，入口文件<code>TodoApp</code>主动调用了TodoStore中的register方法，主要是用来注册<code>dispatcher</code>的回调函数。回调函数接收到从action传过来的数据后，通过switch方法来匹配到具体的业务操作中去。需要注意的一点是，这里store会收到所有action的通知，只能通过类型判断，来匹配自己所需要的。等做完操作后，store必须emit一个事件出来，因为前面提到的，最顶层的controller-views已经添加了对store的监听用来更新state，只有这样数据更新后才能体现到页面上来。这样再回过头去上面那张流程图，是不是觉得很清晰了呢。</p>
 <h3 id="小结">小结</h3>
