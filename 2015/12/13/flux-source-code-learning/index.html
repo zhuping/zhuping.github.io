@@ -132,7 +132,7 @@ ga('send', 'pageview');
 				
 				<section class="switch-part switch-part2">
 					<div class="widget tagcloud">
-						<a href="/tags/apache/" style="font-size: 10.00px;">apache</a><a href="/tags/aws/" style="font-size: 10.00px;">aws</a><a href="/tags/flux/" style="font-size: 10.00px;">flux</a><a href="/tags/javascript/" style="font-size: 15.00px;">javascript</a><a href="/tags/mysql/" style="font-size: 10.00px;">mysql</a><a href="/tags/nginx/" style="font-size: 10.00px;">nginx</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/osx/" style="font-size: 10.00px;">osx</a><a href="/tags/react/" style="font-size: 10.00px;">react</a><a href="/tags/thunkify/" style="font-size: 10.00px;">thunkify</a><a href="/tags/源码/" style="font-size: 20.00px;">源码</a>
+						<a href="/tags/apache/" style="font-size: 10.00px;">apache</a><a href="/tags/aws/" style="font-size: 10.00px;">aws</a><a href="/tags/flux/" style="font-size: 10.00px;">flux</a><a href="/tags/javascript/" style="font-size: 15.00px;">javascript</a><a href="/tags/mysql/" style="font-size: 10.00px;">mysql</a><a href="/tags/nginx/" style="font-size: 10.00px;">nginx</a><a href="/tags/node/" style="font-size: 10.00px;">node</a><a href="/tags/osx/" style="font-size: 10.00px;">osx</a><a href="/tags/react/" style="font-size: 15.00px;">react</a><a href="/tags/reflux/" style="font-size: 10.00px;">reflux</a><a href="/tags/thunkify/" style="font-size: 10.00px;">thunkify</a><a href="/tags/源码/" style="font-size: 20.00px;">源码</a>
 					</div>
 				</section>
 				
@@ -265,7 +265,7 @@ ga('send', 'pageview');
 <li>这些 controller view 就会向 store 请求更新了的 state</li>
 <li>从 store 中获得 state 之后，view controller 将会让它所管辖的子 view 渲染新的 state</li>
 </ul>
-<p>flux其实就是一个订阅发布模式，但与传统的pub/sub模式区别在于，flux的每一个store都会受到所有action的通知，需要通过一个type值来过滤响应，然后emit一个事件，让controller view来监听更新view。因为存在这种需要通过自己去匹配过滤type的行为，也让flux成为很多人吐槽的地方，所以有人开始重新造轮子了，去掉了dispatcher这层，让action和store自带了pub/sub功能，对于使用者来说代码更为简洁了。后面我将来介绍下reflux和redux是怎么实现这个过程的。</p>
+<p>flux其实就是一个订阅发布模式，但与传统的pub/sub模式区别在于，flux的每一个store都会收到所有action的通知，需要通过一个type值来过滤响应，然后emit一个事件，让controller view来监听更新view。因为存在每个store都会收到所有action的通知，也让flux成为很多人吐槽的地方，所以有人开始重新造轮子了，去掉了dispatcher这层，让action和store自带了pub/sub功能，对于使用者来说代码更为简洁了。后面我将来介绍下reflux和redux是怎么实现这个过程的。</p>
 <h3 id="参考">参考</h3>
 <blockquote>
 <p><a href="http://zhuanlan.zhihu.com/FrontendMagazine/20263396" target="_blank" rel="external">http://zhuanlan.zhihu.com/FrontendMagazine/20263396</a></p>
@@ -281,6 +281,15 @@ ga('send', 'pageview');
   
     
 <nav id="article-nav">
+  
+    <a href="/2015/12/17/reflux-source-code-learning/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">&lt;</strong>
+      <div class="article-nav-title">
+        
+          Reflux应用架构学习分析
+        
+      </div>
+    </a>
   
   
     <a href="/2015/11/03/how-to-use-aws-to-build-own-site/" id="article-nav-older" class="article-nav-link-wrap">

@@ -4,7 +4,7 @@
   <subtitle><![CDATA[哪里跑，biubiubiu]]></subtitle>
   <link href="/atom.xml" rel="self"/>
   <link href="http://zhuping.github.io/"/>
-  <updated>2015-12-14T08:32:38.667Z</updated>
+  <updated>2015-12-17T07:55:37.707Z</updated>
   <id>http://zhuping.github.io/</id>
   
   <author>
@@ -15,11 +15,81 @@
   <generator uri="http://zespia.tw/hexo/">Hexo</generator>
   
   <entry>
+    <title><![CDATA[Reflux应用架构学习分析]]></title>
+    <link href="http://zhuping.github.io/2015/12/17/reflux-source-code-learning/"/>
+    <id>http://zhuping.github.io/2015/12/17/reflux-source-code-learning/</id>
+    <published>2015-12-17T07:50:07.000Z</published>
+    <updated>2015-12-17T07:55:06.000Z</updated>
+    <content type="html"><![CDATA[<p>在<a href="http://zhuping.github.io/2015/12/13/flux-source-code-learning/" target="_blank" rel="external">上篇</a>中写了对flux的分析，这次来说说<a href="https://github.com/reflux/refluxjs" target="_blank" rel="external">reflux</a>吧。reflux是对flux的升级扩展，并且去掉了dispatcher这一层，比起使用起flux来，思路更加清晰，是一个标准的pub/sub模式的架构，同时能少写很多代码。这次我还是通过reflux的<a href="https://github.com/spoike/refluxjs-todo" target="_blank" rel="external">todoMvc</a>来解释reflux的用法。</p>
+<a id="more"></a>
+
+<h3 id="reflux介绍">reflux介绍</h3>
+<p>reflux保留了flux中<code>action</code>，<code>store</code>，<code>单向数据流</code>这三个概念。我们主要来看下有哪些不同：</p>
+<ul>
+<li>移除了单例的dispatcher，用action来代替</li>
+<li>store可以监听action的行为，无需进行冗余的switch判断</li>
+<li>store可以相互监听，可以进行进一步的数据聚合操作，类似于map/reduce</li>
+<li><code>waitFor</code>被连续平行的数据流所替代</li>
+</ul>
+<p>整个过程大致是这样的</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="input"><span class="prompt">╔═════════╗   pub    ╔════════╗   pub    ╔═════════════════╗</span></span></div><div class="line">║ Actions ║────────&gt; ║ <span class="constant">Stores</span> ║────────&gt; ║ <span class="constant">View</span> <span class="constant">Components</span> ║</div><div class="line">╚═════════╝&lt;──────── ╚════════╝&lt;──────── ╚═════════════════╝</div><div class="line">     ^        sub                 sub           │</div><div class="line">     |</div><div class="line">     └──────────────────────────────────────────┘</div><div class="line">              call</div></pre></td></tr></table></figure>
+
+<p>store监听action的行为，当页面上有操作触发action的时候，<code>emit</code>一个<code>action</code>事件，store监听到事件后执行store中的callback处理相应的逻辑，同时<code>trigger</code>出另外一个<code>change</code>事件，view通过监听store的变化，来执行setState，从而达到页面重新render更新。下面我们来具体看下todoMvc这个例子的具体实现吧。</p>
+<h4 id="Action的创建">Action的创建</h4>
+<p>首先是action的创建，可以通过<code>createActions</code>的方式，创建所有应用中可能用到的action。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line">global.<span class="variable">TodoActions =</span> Reflux.createActions([</div><div class="line">  <span class="string">"toggleItem"</span>,     // called by button <span class="keyword">in</span> TodoItem</div><div class="line">  <span class="string">"toggleAllItems"</span>, // called by button <span class="keyword">in</span> TodoMain (even though you'd think TodoHeader)</div><div class="line">  <span class="string">"addItem"</span>,        // called by hitting enter <span class="keyword">in</span> field <span class="keyword">in</span> TodoHeader</div><div class="line">  <span class="string">"removeItem"</span>,     // called by button <span class="keyword">in</span> TodoItem</div><div class="line">  <span class="string">"clearCompleted"</span>, // called by button <span class="keyword">in</span> TodoFooter</div><div class="line">  <span class="string">"editItem"</span>        // called by finishing edit <span class="keyword">in</span> TodoItem</div><div class="line">]);</div></pre></td></tr></table></figure>
+
+<p>这里返回的是一个<code>actions</code>对象，里面包含了各个actionName及其对应的<code>functor</code>函数，而此时的<code>functor</code>已经继承了各种<code>pub/sub</code>的私有方法，方便后面使用。<br>如果说想创建单个的action，也可以使用<code>createAction</code>方法，这个是直接返回了一个<code>functor</code>。</p>
+<h4 id="Store到Action的订阅">Store到Action的订阅</h4>
+<p>通过<code>createStore</code>方法来创建store，并且用<code>on</code>加 <em>actionName</em> 的方式添加各个action的回调函数。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">global.todoListStore = Reflux.createStore({</div><div class="line">  // this will set up listeners to all publishers <span class="keyword">in</span> TodoActions, using onKeyname (or keyname) as callbacks</div><div class="line">  listenables: [TodoActions],</div><div class="line">  onEditItem: <span class="keyword">function</span>(itemKey, newLabel) {</div><div class="line">    var foundItem = getItemByKey(this.list,itemKey);</div><div class="line">    <span class="keyword">if</span> (!foundItem) {</div><div class="line">      <span class="keyword">return</span>;</div><div class="line">    }</div><div class="line">    foundItem.label = newLabel;</div><div class="line">    this.updateList(this.list);</div><div class="line">  },</div><div class="line">  </div><div class="line">  <span class="keyword">...</span></div><div class="line">  </div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>使用<code>listenables: [TodoActions]</code>来添加action和callback的绑定，推荐使用这种方式来做绑定。同时你也可以使用<code>listenTo</code>或者<code>listenToMany</code>方法对action做逐个绑定。在createStore内部存在一个<code>Store</code>构造函数，首先把所有回调函数赋值到构造函数的<code>this</code>对象上，通过<code>listenToMany</code>方法逐一对actionName做callbackName化（加 <em>on</em> 处理），然后在<code>this</code>对象上找到action所对应的回调函数，然后调用<code>listenTo</code>方法。传入到<code>listenTo</code>内部的<code>listenable</code>参数，其实就是我们前面提到的<code>functor</code>函数，在它上面已经绑定了<code>listen</code>这个私有方法。此时调用<code>listen</code>方法来添加<code>addListener</code>的监听，这样就完成了store到action的监听。</p>
+<h3 id="Action到Store的发布">Action到Store的发布</h3>
+<p>在view组件中，通过鼠标事件或者是键盘操作触发action的执行。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div></pre></td><td class="code"><pre><div class="line">handleDestroy: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">  TodoActions.removeItem(<span class="keyword">this</span>.props.id);</div><div class="line">},</div><div class="line">render: <span class="function"><span class="keyword">function</span><span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">var</span> classes = React.addons.classSet({</div><div class="line">    <span class="string">'completed'</span>: <span class="keyword">this</span>.props.isComplete,</div><div class="line">    <span class="string">'editing'</span>: <span class="keyword">this</span>.state.isEditing</div><div class="line">  });</div><div class="line">  <span class="keyword">return</span> (</div><div class="line">    &lt;li className={classes}&gt;</div><div class="line">      &lt;div className=<span class="string">"view"</span>&gt;</div><div class="line">        &lt;input className=<span class="string">"toggle"</span> type=<span class="string">"checkbox"</span> checked={!!<span class="keyword">this</span>.props.isComplete} onChange={<span class="keyword">this</span>.handleToggle} /&gt;</div><div class="line">        &lt;label onDoubleClick={<span class="keyword">this</span>.handleEditStart}&gt;{<span class="keyword">this</span>.props.label}&lt;/label&gt;</div><div class="line">        &lt;button className=<span class="string">"destroy"</span> onClick={<span class="keyword">this</span>.handleDestroy}&gt;&lt;/button&gt;</div><div class="line">      &lt;/div&gt;</div><div class="line">      &lt;input ref=<span class="string">"editInput"</span> className=<span class="string">"edit"</span> valueLink={<span class="keyword">this</span>.linkState(<span class="string">'editValue'</span>)} onKeyUp={<span class="keyword">this</span>.handleValueChange} onBlur={<span class="keyword">this</span>.handleBlur} /&gt;</div><div class="line">    &lt;/li&gt;</div><div class="line">  );</div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>我们通过click事件触发了一个action的删除操作。这里的<code>TodoActions</code>是前面提到的actions对象，<code>TodoActions.removeItem()</code>执行了<code>functor</code>函数。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> functor = <span class="function"><span class="keyword">function</span> <span class="title">functor</span><span class="params">()</span> </span>{</div><div class="line">  <span class="keyword">var</span> triggerType = functor.sync ? <span class="string">"trigger"</span> : <span class="string">"triggerAsync"</span>;</div><div class="line">  <span class="keyword">return</span> functor[triggerType].apply(functor, <span class="built_in">arguments</span>);</div><div class="line">};</div></pre></td></tr></table></figure>
+
+<p>最终在<code>trigger</code>函数内部实现了事件的emit，这样就完成了action到store的事件发布。每次操作action就会执行store中对应的回调函数。</p>
+<h3 id="Store到View的发布">Store到View的发布</h3>
+<p>上面介绍了action和store之间的关系，下面来说说store和view之间的关系。这两者之间也是种pub/sub模式。不知道你注意到没，在store中的每个回调最终都会调用<code>updateList</code>函数内部的<code>this.trigger()</code>方法。如注释写的，他是用来通知监听了store的组件，list被更新了。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// called whenever we change a list. normally this would mean a database API call</span></div><div class="line">updateList: <span class="function"><span class="keyword">function</span><span class="params">(list)</span></span>{</div><div class="line">  localStorage.setItem(localStorageKey, JSON.stringify(<span class="keyword">list</span>));</div><div class="line">  <span class="comment">// if we used a real database, we would likely do the below in a callback</span></div><div class="line">  this.<span class="keyword">list</span> = <span class="keyword">list</span>;</div><div class="line">  this.trigger(<span class="keyword">list</span>); <span class="comment">// sends the updated list to all listening components (TodoApp)</span></div><div class="line">}</div></pre></td></tr></table></figure>
+
+<p>这里<code>this</code>指向Store构造函数，<code>trigger</code>函数其实是emit了一个<code>change</code>事件。找到了发布者，我们再来看看订阅者。</p>
+<h3 id="View到Store的订阅">View到Store的订阅</h3>
+<p>在view中通过mixins的方式，添加了view对store的监听。当有数据发生变化的时候，调用setState方法修改state的状态，重新渲染组件。</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">mixin<span class="variable">s:</span> [Reflux.connect(todoListStore,<span class="string">"list"</span>)]</div></pre></td></tr></table></figure>
+
+<p>这样我们就完成了上图中所有的流程。</p>
+<h3 id="小结">小结</h3>
+<p>与flux比起来，store与view之间的关系是一样的，都是通过controller-views来监听store的数据变化，当有数据变动后emit一个事件出来，view监听到事件后，修改state的状态来重新render更新页面。区别在于action与store之间个关系，flux通过dispatcher这个中间者来分发action和store之间的数据，reflux则是直接让action和store互相关联，省去了分发者这个角色。<br>对于flux来说，dispatcher也不是多余的存在，可以看下官网的<a href="http://facebook.github.io/react/blog/2014/07/30/flux-actions-and-the-dispatcher.html#why-we-need-a-dispatcher" target="_blank" rel="external">解释</a>。假设存在storeA和storeB，其中A又依赖了B，所以需要通过dispatcher提供的<code>waitFor()</code>方法来先执行storeB，dispatcher也确保了同一时间只能执行一个action，同时也规避了A依赖B，而B又依赖A这样循环依赖的存在。<br>篇幅有限，还有很多都没涉及到讲，可以看下下面参考链接里的内容。讲完了flux和reflux的介绍，下次再来讲讲redux的介绍。</p>
+<h3 id="参考">参考</h3>
+<blockquote>
+<p><a href="http://blog.krawaller.se/posts/react-js-architecture-flux-vs-reflux/" target="_blank" rel="external">http://blog.krawaller.se/posts/react-js-architecture-flux-vs-reflux/</a><br><a href="http://blog.krawaller.se/posts/reflux-refinement/" target="_blank" rel="external">http://blog.krawaller.se/posts/reflux-refinement/</a><br><a href="http://www.cnblogs.com/lovesueee/p/4893218.html" target="_blank" rel="external">http://www.cnblogs.com/lovesueee/p/4893218.html</a><br><a href="http://segmentfault.com/a/1190000002793786?utm_source=tuicool#articleHeader16" target="_blank" rel="external">http://segmentfault.com/a/1190000002793786?utm_source=tuicool#articleHeader16</a></p>
+</blockquote>
+]]></content>
+    <summary type="html">
+    <![CDATA[<p>在<a href="http://zhuping.github.io/2015/12/13/flux-source-code-learning/" target="_blank" rel="external">上篇</a>中写了对flux的分析，这次来说说<a href="https://github.com/reflux/refluxjs" target="_blank" rel="external">reflux</a>吧。reflux是对flux的升级扩展，并且去掉了dispatcher这一层，比起使用起flux来，思路更加清晰，是一个标准的pub/sub模式的架构，同时能少写很多代码。这次我还是通过reflux的<a href="https://github.com/spoike/refluxjs-todo" target="_blank" rel="external">todoMvc</a>来解释reflux的用法。</p>
+]]>
+    
+    </summary>
+    
+      <category term="react" scheme="http://zhuping.github.io/tags/react/"/>
+    
+      <category term="reflux" scheme="http://zhuping.github.io/tags/reflux/"/>
+    
+      <category term="源码" scheme="http://zhuping.github.io/tags/%E6%BA%90%E7%A0%81/"/>
+    
+  </entry>
+  
+  <entry>
     <title><![CDATA[Flux应用架构学习分析]]></title>
     <link href="http://zhuping.github.io/2015/12/13/flux-source-code-learning/"/>
     <id>http://zhuping.github.io/2015/12/13/flux-source-code-learning/</id>
     <published>2015-12-13T09:02:48.000Z</published>
-    <updated>2015-12-14T08:31:38.000Z</updated>
+    <updated>2015-12-15T02:45:38.000Z</updated>
     <content type="html"><![CDATA[<p>今年FB的<a href="https://facebook.github.io/react/" target="_blank" rel="external">React</a>在前端界受到了广泛的关注，广大码农纷纷投入到学习React的阵营中，我也不例外。React标榜自己只是个UI，并不是一个完整的MVC框架，所以一时出现了很多基于React的MVC框架，其中以<a href="https://github.com/facebook/flux" target="_blank" rel="external">flux</a>、<a href="https://github.com/reflux/refluxjs" target="_blank" rel="external">reflux</a>、<a href="https://github.com/rackt/redux" target="_blank" rel="external">redux</a>最为关注。笔者也没在实际项目中使用过React或者任何框架，所以只是想通过<a href="https://github.com/facebook/flux/tree/master/examples/flux-todomvc" target="_blank" rel="external">todomvc</a>这个例子，浅显得分析下flux在项目中的来龙去脉，如果描述有误或者不正确的地方还望指出。</p>
 <a id="more"></a>
 
@@ -58,7 +128,7 @@
 <li>这些 controller view 就会向 store 请求更新了的 state</li>
 <li>从 store 中获得 state 之后，view controller 将会让它所管辖的子 view 渲染新的 state</li>
 </ul>
-<p>flux其实就是一个订阅发布模式，但与传统的pub/sub模式区别在于，flux的每一个store都会受到所有action的通知，需要通过一个type值来过滤响应，然后emit一个事件，让controller view来监听更新view。因为存在这种需要通过自己去匹配过滤type的行为，也让flux成为很多人吐槽的地方，所以有人开始重新造轮子了，去掉了dispatcher这层，让action和store自带了pub/sub功能，对于使用者来说代码更为简洁了。后面我将来介绍下reflux和redux是怎么实现这个过程的。</p>
+<p>flux其实就是一个订阅发布模式，但与传统的pub/sub模式区别在于，flux的每一个store都会收到所有action的通知，需要通过一个type值来过滤响应，然后emit一个事件，让controller view来监听更新view。因为存在每个store都会收到所有action的通知，也让flux成为很多人吐槽的地方，所以有人开始重新造轮子了，去掉了dispatcher这层，让action和store自带了pub/sub功能，对于使用者来说代码更为简洁了。后面我将来介绍下reflux和redux是怎么实现这个过程的。</p>
 <h3 id="参考">参考</h3>
 <blockquote>
 <p><a href="http://zhuanlan.zhihu.com/FrontendMagazine/20263396" target="_blank" rel="external">http://zhuanlan.zhihu.com/FrontendMagazine/20263396</a></p>
